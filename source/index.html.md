@@ -74,7 +74,7 @@ Http api endpoint available on [https://btc-alpha.com/api/v1/](https://btc-alpha
 Some methods requires authorization [read below](#authorization).
 
 <aside class="success">
-We have limit in 1 call per seconds to Http Api.
+We have limit in 2 calls per second from single account to authorization required methods and 100 calls per secong from single ip address to public methods.
 </aside>
 
 ## Authorization
