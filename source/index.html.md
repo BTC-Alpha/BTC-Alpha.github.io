@@ -2,12 +2,12 @@
 title: BTC-Alpha API Reference
 
 language_tabs:
-  - python
-  - javascript
+  - python: Python
+  - javascript: Node.js
 
 toc_footers:
   - <a href='https://btc-alpha.com/accounts/register/'>Sign Up for a Developer Key</a>
-  - <a href='https://github.com/tripit/slate'>Documentation Powered by Slate</a>
+  - <a href='https://github.com/lord/slate'>Documentation Powered by Slate</a>
 
 includes:
   - errors
@@ -21,11 +21,19 @@ search: true
 
 Welcome to the BTC-Alpha API docs!
 
+Service btc-alpha.com provides open API for trading operations and broadcasting of all trading events. 
 
-# Sockets Api
 
+# Web Sockets API
+
+Currently Web Socket API can be used for getting the freshest info about lats trades, new and cancelled orders as well. Such as using socket connection reduce network overhead it's preferable way to get latest exchange rate and orderbook.
+
+API built on latest version of [socket.io](https://www.npmjs.com/package/socket.io) library for Node.js. So it should be easy to get work with.
+
+## Orderbook events
 
 > There are two types of order book notification messages
+> In case new order was created, you'll get information about order, what amount remained after operation and list of trades created after that order.   
 
 ```json
 {
@@ -46,6 +54,8 @@ Welcome to the BTC-Alpha API docs!
 }
 ```
 
+> When order was cancelled by owner 
+
 ```json
 {
   "success": true,
@@ -59,23 +69,23 @@ Welcome to the BTC-Alpha API docs!
 }
 ```
 
-You can get live order book updates, using our Sockets Api. 
+All you need to start receiving live information about orderbook is connect to `wss://btc-alpha.com/socket.io` and subscribe to necessary channel.
 
-For receiving notifications, just connect to `wss://btc-alpha.com` and subscribe to necessary channel (Examples: book_BTC_USD, book_ETH_BTC).
-
-Sockets api use engine.io protocol and don`t have authorization;
+There are chanel names have pattern `book_<pair_name>` where `<pair_name>` is any pair available in service. For example `book_BTC_USD` or `book_BTC_ETH`. 
 
 
-# Http Api (v1)
+# HTTP API (v1)
 
 
-Http api endpoint available on [https://btc-alpha.com/api/v1/](https://btc-alpha.com/api/v1/).
+HTTP API endpoint available on [https://btc-alpha.com/api/v1/](https://btc-alpha.com/api/v1/).
 
 Some methods requires authorization [read below](#authorization).
 
 <aside class="success">
-We have limit in 2 calls per second from single account to authorization required methods and 100 calls per secong from single ip address to public methods.
+We have limit in 2 calls per second from single account to authorization required methods and 100 calls per secong from single IP address to public methods.
 </aside>
+
+All HTTP methods accept `JSON` formats of requests and responses if it not specified by headers.  
 
 ## Authorization
 
@@ -105,7 +115,7 @@ var hmacSha256 = require('crypto-js/hmac-sha256');
 function serializeObject (object) {
     var str = '';
     for (var key in object) {
-        if (str != '')
+        if (str !== '')
             str += '&';
 
         str += key + "=" + encodeURIComponent(object[key]);
@@ -125,9 +135,9 @@ function getAuthHeaders (data) {
 }
 ```
 
-In order for access to private api methods, generate authorization keys [here](https://btc-alpha.com/accounts/api/settings).
+In order for access to private API methods, generate authorization keys [in profile settings](https://btc-alpha.com/accounts/api/settings).
 
-All calls to these methods must contain the following headers:
+All request to these methods must contain the following headers:
 
 * X-KEY - your key.
 * X-SIGN - query's POST data, sorted by keys and signed by your key's "secret" according to the HMAC-SHA256 method.
@@ -150,9 +160,11 @@ response = requests.get('https://btc-alpha.com/api/v1/currencies/')
 var request = require('request');
 
 request.get('https://btc-alpha.com/api/v1/currencies/', function (error, response, body) {
-    // processing response    
+    // process response    
 });
 ```
+
+> Sample output
 
 ```json
 [
@@ -167,15 +179,18 @@ request.get('https://btc-alpha.com/api/v1/currencies/', function (error, respons
 ]
 ```
 
+Returns information about all available currencies.
+
 ### HTTP Request
 
-`GET https://btc-alpha.com/api/v1/currencies/`
+`GET https://btc-alpha.com/api/v1/pairs/`
 
 
 # Pairs
 
 
 ## List all pairs
+
 
 ```python
 import requests
@@ -187,9 +202,11 @@ response = requests.get('https://btc-alpha.com/api/v1/pairs/')
 var request = require('request');
 
 request.get('https://btc-alpha.com/api/v1/pairs/', function (error, response, body) {
-    // processing response    
+    // process response    
 });
 ```
+
+> Sample output
 
 ```json
 [
@@ -203,6 +220,8 @@ request.get('https://btc-alpha.com/api/v1/pairs/', function (error, response, bo
    }
 ]
 ```
+
+Returns information about all available pairs.
 
 ### HTTP Request
 
@@ -231,10 +250,18 @@ response = requests.get('https://btc-alpha.com/api/v1/wallets/', headers = get_a
 ```javascript
 var request = require('request');
 
-request.get('https://btc-alpha.com/api/v1/wallets/', {headers: getAuthHeaders({})}, function (error, response, body) {
-    // processing response    
-});
+request.get(
+    'https://btc-alpha.com/api/v1/wallets/', 
+    {
+        headers: getAuthHeaders({})
+    }, 
+    function (error, response, body) {
+        // process response    
+    }
+);
 ```
+
+> Sample output
 
 ```json
 [
@@ -246,9 +273,7 @@ request.get('https://btc-alpha.com/api/v1/wallets/', {headers: getAuthHeaders({}
 ]
 ```
 
-<aside class="warning">
-This method requires authorization.
-</aside>
+Returns information about all wallets of account.
 
 ### HTTP Request
 
@@ -260,47 +285,52 @@ Parameter | Default | Description
 --------- | ------- | -----------
 currency_id | all | Filter by currency.
 
+<aside class="warning">
+This method requires authorization.
+</aside>
+
 
 # Orders
 
+## Order statuses
 
-Value | Order status name
---------- |  -----------
-1 | Active
-2 | Canceled
-3 | Done
+Value | Status name | Description
+--------- |  ----------- | -----------
+1 | Active | Order in queue for executing
+2 | Canceled | Order not active, permanently
+3 | Done | Order fully executed
 
 
 ## Get orderbook
 
 ```python
 import requests
-from urllib.parse import urlencode
 
 params = { 
     limit_bids: 1,
     limit_asks: 1,
 }
 
-response = requests.get('https://btc-alpha.com/api/v1/orderbook/BTC_USD/?' + urlencode(params))
+response = requests.get('https://btc-alpha.com/api/v1/orderbook/BTC_USD/', params=params)
 ```
 
 ```javascript
 var request = require('request');
 
-var params = { 
-    limit_bids: 1,
-    limit_asks: 1,
-}
+var url = 'https://btc-alpha.com/api/v1/orderbook/BTC_USD/';
 
-request.get('https://btc-alpha.com/api/v1/orderbook/BTC_USD/?' + serializeObject(params), 
-function (error, response, body) {
-    // processing response    
-}
+var params = {
+    limit_bids: 1,
+    limit_asks: 1
+};
+
+request.get({url: url, qs: params}, function (error, response, body) {
+        // process response    
+    }
 );
 ```
 
-> Response format if grouping disabled
+> Sample output when grouping disabled
 
 ```json
 {
@@ -323,24 +353,26 @@ function (error, response, body) {
 }
 ```
 
-> Response format if grouping enabled
+> Sample output when grouping enabled
 
 ```json
 {
   "sell": [
     {
       "price": 911.519, 
-      "amount": 0.000446, 
+      "amount": 0.000446 
      }
    ],
   "buy": [
     {
       "price": 911.122, 
-      "amount": 0.001233, 
+      "amount": 0.001233 
     }
   ]
 }
 ```
+
+Get full orderbook of **active** orders
 
 ### HTTP Request
 
@@ -367,9 +399,11 @@ response = requests.get('https://btc-alpha.com/api/v1/orders/own/', headers = ge
 var request = require('request');
 
 request.get('https://btc-alpha.com/api/v1/orders/own/', {headers: getAuthHeaders({})}, function (error, response, body) {
-    // processing response    
+    // process response    
 });
 ```
+
+> Sample output
 
 ```json
 [
@@ -387,6 +421,8 @@ request.get('https://btc-alpha.com/api/v1/orders/own/', {headers: getAuthHeaders
 <aside class="warning">
 This method requires authorization.
 </aside>
+
+List all orders created in your account. Can be filtered by query parameters.
 
 ### HTTP Request
 
@@ -418,9 +454,11 @@ var request = require('request');
 var oid = 53189;
 
 request.get('https://btc-alpha.com/api/v1/order/' + oid + '/', function (error, response, body) {
-    // processing response    
+    // process response    
 });
 ```
+
+> Sample output
 
 ```json
 {
@@ -433,6 +471,8 @@ request.get('https://btc-alpha.com/api/v1/order/' + oid + '/', function (error, 
 }
 ```
 
+Get detailed information about order by its id
+
 ### HTTP Request
 
 `GET https://btc-alpha.com/api/v1/order/<pk>/`
@@ -444,33 +484,38 @@ request.get('https://btc-alpha.com/api/v1/order/' + oid + '/', function (error, 
 ```python
 import requests
 
-data = {
+order = {
     type: 'buy',
     pair: 'BTC_USD',
     amount: '1.0',
     price: '870.69'
 }
 
-response = requests.post('https://btc-alpha.com/api/v1/order/', data = data, headers = get_auth_headers(data))
+response = requests.post('https://btc-alpha.com/api/v1/order/', data = order, headers = get_auth_headers(order))
 ```
 
 ```javascript
 var request = require('request');
 
-var data = {
+var order = {
     type: 'buy',
     pair: 'BTC_USD',
     amount: '1.0',
     price: '870.69'    
 };
 
-request.post('https://btc-alpha.com/api/v1/order/', {
-    form: data,
-    headers: getAuthHeaders(data)
-}, function (error, response, body) {
-    // processing response    
-});
+request.post({
+                url: 'https://btc-alpha.com/api/v1/order/',
+                form: order,
+                headers: getAuthHeaders(order)
+            }, function (error, response, body) {
+                // process response
+                // save order id, check if it's executed
+            }
+);
 ```
+
+> Sample output
 
 ```json
 {
@@ -495,6 +540,8 @@ request.post('https://btc-alpha.com/api/v1/order/', {
 This method requires authorization.
 </aside>
 
+Create new order that will be automatically executed.
+
 ### HTTP Request
 
 `POST https://btc-alpha.com/api/v1/order/`
@@ -503,9 +550,9 @@ This method requires authorization.
 
 Parameter | Description
 --------- | -----------
-type | Type of order (sell or buy).
+type | Type of order (`sell` or `buy`).
 pair | Pair of order
-amount | Amount of order.
+amount | Amount of first currency of pair.
 price | Price of order. This param have limited precision (See [pairs](#pairs)).
 
 
@@ -529,13 +576,17 @@ var data = {
     order: 63568
 };
 
-request.post('https://btc-alpha.com/api/v1/order-cancel/', {
-    form: data,
-    headers: getAuthHeaders(data)
-}, function (error, response, body) {
-    // processing response    
-});
+request.post({
+        url: 'https://btc-alpha.com/api/v1/order-cancel/',
+        form: data,
+        headers: getAuthHeaders(data)
+    }, function (error, response, body) {
+        // process response    
+    }
+);
 ```
+
+> Sample output
 
 ```json
 {
@@ -547,6 +598,8 @@ request.post('https://btc-alpha.com/api/v1/order-cancel/', {
 This method requires authorization.
 </aside>
 
+Cancel your **active** order. If order not exists, it's done or cancelled error message will be returned. 
+
 ### HTTP Request
 
 `POST https://btc-alpha.com/api/v1/order-cancel/`
@@ -555,7 +608,7 @@ This method requires authorization.
 
 Parameter | Description
 --------- | -----------
-order | Orders id.
+order | ID of order to cancel
 
 
 # Exchanges
@@ -574,9 +627,11 @@ response = requests.get('https://btc-alpha.com/api/v1/exchanges/')
 var request = require('request');
 
 request.get('https://btc-alpha.com/api/v1/exchanges/', function (error, response, body) {
-    // processing response    
+    // process response    
 });
 ```
+
+> Sample output
 
 ```json
 [
@@ -590,6 +645,8 @@ request.get('https://btc-alpha.com/api/v1/exchanges/', function (error, response
   }
 ]
 ```
+
+List last exchanges
 
 ### HTTP Request
 
@@ -607,6 +664,8 @@ limit | 2000 | Limiting results.
 <aside class="warning">
 This method requires authorization.
 </aside>
+
+List only own exchanges where your account was buyer or seller.
 
 ### HTTP Request
 
@@ -635,9 +694,13 @@ response = requests.get('https://btc-alpha.com/api/v1/deposits/', headers = get_
 ```javascript
 var request = require('request');
 
-request.get('https://btc-alpha.com/api/v1/deposits/', {headers: getAuthHeaders({})}, function (error, response, body) {
-    // processing response    
-});
+request.get({
+                url: 'https://btc-alpha.com/api/v1/deposits/',
+                headers: getAuthHeaders({})
+            }, function (error, response, body) {
+                // process response    
+            }
+);
 ```
 
 ```json
@@ -655,6 +718,8 @@ request.get('https://btc-alpha.com/api/v1/deposits/', {headers: getAuthHeaders({
 This method requires authorization.
 </aside>
 
+List your deposits
+
 ### HTTP Request
 
 `GET https://btc-alpha.com/api/v1/deposits/`
@@ -662,14 +727,15 @@ This method requires authorization.
 
 # Withdraws
 
+## Withdraw statuses
 
-Value | Withdraw status name
---------- |  -----------
-10 | New
-20 | Verified
-30 | Approved
-40 | Refused
-50 | Canceled
+Value | Status name | Description
+--------- | ----------- | -----------
+10 | New | Withdraw created, verification need
+20 | Verified | Withdraw verified, waiting for approving 
+30 | Approved | Approved by moderator
+40 | Refused | Refused by moderator. See your email for more details
+50 | Canceled | Cancelled by user
 
 ## List own made withdraws
 
@@ -682,10 +748,16 @@ response = requests.get('https://btc-alpha.com/api/v1/withdraws/', headers: get_
 ```javascript
 var request = require('request');
 
-request.get('https://btc-alpha.com/api/v1/withdraws/', {headers: getAuthHeaders({})}, function (error, response, body) {
-    // processing response    
-});
+request.get({
+        url: 'https://btc-alpha.com/api/v1/withdraws/',
+        headers: getAuthHeaders({})
+    }, function (error, response, body) {
+        // process response    
+    }
+);
 ```
+
+> Sample output
 
 ```json
 [
@@ -703,6 +775,8 @@ request.get('https://btc-alpha.com/api/v1/withdraws/', {headers: getAuthHeaders(
 This method requires authorization.
 </aside>
 
+Get list of your withdraws
+
 ### HTTP Request
 
 `GET https://btc-alpha.com/api/v1/withdraws/`
@@ -718,20 +792,29 @@ status | all | Filter by status.
 
 ```python
 import requests
-from urllib.parse import urlencode
 
-response = requests.get('https://btc-alpha.com/api/charts/BTC_USD/60/chart?' + urlencode({limit: 1}))
+params = {
+    'limit': 1
+    }
+
+response = requests.get('https://btc-alpha.com/api/charts/BTC_USD/60/chart', params = params)
 ```
 
 ```javascript
 var request = require('request');
 
-var params = {limit: 1}
+var params = {limit: 1};
 
-request.get('https://btc-alpha.com/api/charts/BTC_USD/60/chart?' + serializeObject(params), function (error, response, body) {
-    // processing response    
-});
+request.get({
+                url: 'https://btc-alpha.com/api/charts/BTC_USD/60/chart',
+                qs: params
+            }, function (error, response, body) {
+                // process response    
+            }
+);
 ```
+
+> Sample output
 
 ```json
 [
@@ -745,6 +828,8 @@ request.get('https://btc-alpha.com/api/charts/BTC_USD/60/chart?' + serializeObje
    }
 ]
 ```
+
+### Chart types
 
 Type value | Type name
 --------- | -------
@@ -764,6 +849,7 @@ D | 1 day
 
 Parameter | Default | Description
 --------- | ------- | -----------
-limit | 720 | Limiting results.
-since | None | Since timestamp.
-until | None | Until timestamp.
+limit | 720 | Limiting results
+since | None | Since Timestamp
+until | None | Until Timestamp
+
