@@ -69,7 +69,7 @@ API built on latest version of [socket.io](https://www.npmjs.com/package/socket.
 }
 ```
 
-All you need to start receiving live information about orderbook is connect to `wss://btc-alpha.com/socket.io` and subscribe to necessary channel.
+All you need to start receiving live information about orderbook is connect to `wss://btc-alpha.com` and subscribe to necessary channel.
 
 There are chanel names have pattern `book_<pair_name>` where `<pair_name>` is any pair available in service. For example `book_BTC_USD` or `book_BTC_ETH`. 
 
