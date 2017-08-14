@@ -646,7 +646,6 @@ request.get('https://btc-alpha.com/api/v1/exchanges/', function (error, response
 ]
 ```
 
-List last exchanges
 
 ### HTTP Request
 
@@ -657,7 +656,8 @@ List last exchanges
 Parameter | Default | Description
 --------- | ------- | -----------
 pair | all | Filter by pair.
-limit | 2000 | Limiting results.
+limit | 100 | Limiting results.
+offset | 0 | Skip number of records.
 
 ## List own exchanges
 
@@ -677,7 +677,8 @@ Parameter | Default | Description
 --------- | ------- | -----------
 type | all | Filter by orders type (sell or buy).
 pair | all | Filter by pair.
-limit | 2000 | Limiting results.
+limit | 100 | Limiting results.
+offset | 0 | Skip number of records.
 
 
 # Deposits
