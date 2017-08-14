@@ -763,8 +763,6 @@ This method requires authorization.
   </span><span class="p">}</span><span class="w">
 </span><span class="p">]</span><span class="w">
 </span></code></pre>
-<p>List last exchanges</p>
-
 <h3 id="http-request">HTTP Request</h3>
 
 <p><code class="prettyprint">GET https://btc-alpha.com/api/v1/exchanges/</code></p>
@@ -785,8 +783,13 @@ This method requires authorization.
 </tr>
 <tr>
 <td>limit</td>
-<td>2000</td>
+<td>100</td>
 <td>Limiting results.</td>
+</tr>
+<tr>
+<td>offset</td>
+<td>0</td>
+<td>Skip number of records.</td>
 </tr>
 </tbody></table>
 
@@ -823,8 +826,13 @@ This method requires authorization.
 </tr>
 <tr>
 <td>limit</td>
-<td>2000</td>
+<td>100</td>
 <td>Limiting results.</td>
+</tr>
+<tr>
+<td>offset</td>
+<td>0</td>
+<td>Skip number of records.</td>
 </tr>
 </tbody></table>
 
