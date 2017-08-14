@@ -660,6 +660,7 @@ limit | 100 | Limiting results.
 offset | 0 | Skip number of records.
 ordering | -id | Ordering parameter. `id` - ascending sorting, `-id` - descending sorting.
 
+
 ## List own exchanges
 
 <aside class="warning">
