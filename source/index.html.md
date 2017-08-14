@@ -658,6 +658,7 @@ Parameter | Default | Description
 pair | all | Filter by pair.
 limit | 100 | Limiting results.
 offset | 0 | Skip number of records.
+ordering | -id | Ordering parameter. `id` - ascending sorting, `-id` - descending sorting.
 
 ## List own exchanges
 
@@ -679,6 +680,7 @@ type | all | Filter by orders type (sell or buy).
 pair | all | Filter by pair.
 limit | 100 | Limiting results.
 offset | 0 | Skip number of records.
+ordering | -id | Ordering parameter. `id` - ascending sorting, `-id` - descending sorting.
 
 
 # Deposits
