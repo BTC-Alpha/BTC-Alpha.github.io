@@ -137,6 +137,7 @@
 In case new order was created, you&rsquo;ll get information about order, what amount remained after operation and list of trades created after that order.   </p>
 </blockquote>
 <pre class="highlight json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"success"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
   </span><span class="s2">"date"</span><span class="p">:</span><span class="w"> </span><span class="mf">1485686507.0944622</span><span class="p">,</span><span class="w"> 
   </span><span class="s2">"oid"</span><span class="p">:</span><span class="w"> </span><span class="mi">15234</span><span class="p">,</span><span class="w">
   </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sell"</span><span class="p">,</span><span class="w"> 
@@ -159,9 +160,10 @@ In case new order was created, you&rsquo;ll get information about order, what am
 <pre class="highlight json"><code><span class="p">{</span><span class="w">
   </span><span class="s2">"success"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
   </span><span class="s2">"date"</span><span class="p">:</span><span class="w"> </span><span class="mf">1485686413.5688234</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"oid"</span><span class="p">:</span><span class="w"> </span><span class="mi">15235</span><span class="p">,</span><span class="w"> 
-  </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sell"</span><span class="p">,</span><span class="w"> 
+  </span><span class="s2">"oid"</span><span class="p">:</span><span class="w"> </span><span class="mi">15235</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"cancel_order_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">4535</span><span class="p">,</span><span class="w">
   </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">935.23</span><span class="p">,</span><span class="w"> 
+  </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sell"</span><span class="p">,</span><span class="w"> 
   </span><span class="s2">"amount"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0123</span><span class="p">,</span><span class="w">
   </span><span class="s2">"pair"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC_USD"</span><span class="p">,</span><span class="w">
   </span><span class="s2">"cancelled"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
@@ -202,30 +204,75 @@ We have limit in 2 calls per second from single account to authorization require
             <span class="s">'X-SIGN'</span><span class="p">:</span> <span class="n">sign</span><span class="p">,</span>
             <span class="s">'X-NONCE'</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)),</span>
         <span class="p">}</span>
-</code></pre><pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">sortObj</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'sort-object'</span><span class="p">);</span>
-<span class="kd">var</span> <span class="nx">hmacSha256</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'crypto-js/hmac-sha256'</span><span class="p">);</span>
+</code></pre><pre class="highlight javascript"><code><span class="kr">const</span> <span class="nx">hmacSha256</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'crypto-js/hmac-sha256'</span><span class="p">);</span> <span class="c1">// sha256 hash. or use you favorite u like</span>
+<span class="kr">const</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'request'</span><span class="p">);</span> <span class="c1">// for http requests. or use you favorite u like</span>
 
-<span class="kd">function</span> <span class="nx">serializeObject</span> <span class="p">(</span><span class="nx">object</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nx">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">;</span>
-    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">key</span> <span class="k">in</span> <span class="nx">object</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">str</span> <span class="o">!==</span> <span class="s1">''</span><span class="p">)</span>
-            <span class="nx">str</span> <span class="o">+=</span> <span class="s1">'&amp;'</span><span class="p">;</span>
+<span class="kr">const</span> <span class="nx">BASE_URL</span> <span class="o">=</span> <span class="s1">'https://btc-alpha.com/api/v1'</span><span class="p">;</span>
+<span class="kr">const</span> <span class="nx">API_KEY</span> <span class="o">=</span> <span class="s1">'0000-0000...'</span><span class="p">;</span>
+<span class="kr">const</span> <span class="nx">SECRET</span> <span class="o">=</span> <span class="s1">'Z%2........'</span><span class="p">;</span>
 
-        <span class="nx">str</span> <span class="o">+=</span> <span class="nx">key</span> <span class="o">+</span> <span class="s2">"="</span> <span class="o">+</span> <span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">object</span><span class="p">[</span><span class="nx">key</span><span class="p">]);</span>
-    <span class="p">}</span>
-    <span class="k">return</span> <span class="nx">str</span><span class="p">;</span>
+<span class="c1">//Serialize for singing only. Can be used in request body if u like urlencoded form format instead of json</span>
+<span class="kd">function</span> <span class="nx">serializePayload</span><span class="p">(</span><span class="nx">payload</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nb">Object</span>
+    <span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">payload</span><span class="p">)</span> <span class="c1">// get keys of payload object</span>
+    <span class="p">.</span><span class="nx">sort</span><span class="p">()</span> <span class="c1">// sort keys</span>
+    <span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">key</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">key</span> <span class="o">+</span> <span class="s2">"="</span> <span class="o">+</span> <span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">payload</span><span class="p">[</span><span class="nx">key</span><span class="p">]))</span> <span class="c1">// each value should be url encoded. the most sensitive part for sign checking</span>
+    <span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">'&amp;'</span><span class="p">);</span> <span class="c1">// to sting, separate with ampersand</span>
 <span class="p">}</span>
 
-<span class="kd">function</span> <span class="nx">getAuthHeaders</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="s1">'your key'</span> <span class="o">+</span> <span class="nx">serializeObject</span><span class="p">(</span><span class="nx">sortObj</span><span class="p">(</span><span class="nx">data</span><span class="p">));</span>
-    <span class="kd">var</span> <span class="nx">sign</span> <span class="o">=</span> <span class="nx">hmacSha256</span><span class="p">(</span><span class="nx">message</span><span class="p">,</span> <span class="s1">'your secret'</span><span class="p">).</span><span class="nx">toString</span><span class="p">();</span>
+<span class="c1">// Generates auth headers</span>
+<span class="kd">function</span> <span class="nx">getAuthHeaders</span><span class="p">(</span><span class="nx">payload</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// get SHA256 of &lt;API_KEY&gt;&lt;sorted urlencoded payload string&gt;&lt;SECRET&gt;</span>
+  <span class="kr">const</span> <span class="nx">sign</span> <span class="o">=</span> <span class="nx">hmacSha256</span><span class="p">(</span><span class="nx">API_KEY</span> <span class="o">+</span> <span class="nx">serializePayload</span><span class="p">(</span><span class="nx">payload</span><span class="p">),</span> <span class="nx">SECRET</span><span class="p">).</span><span class="nx">toString</span><span class="p">();</span>
 
-    <span class="k">return</span> <span class="p">{</span>
-        <span class="s1">'X-KEY'</span><span class="p">:</span> <span class="s1">'your key'</span><span class="p">,</span>
-        <span class="s1">'X-SIGN'</span><span class="p">:</span> <span class="nx">sign</span><span class="p">,</span>
-        <span class="s1">'X-NONCE'</span><span class="p">:</span> <span class="p">(</span><span class="k">new</span> <span class="nb">Date</span><span class="p">()).</span><span class="nx">getTime</span><span class="p">()</span>
-    <span class="p">};</span>
+  <span class="k">return</span> <span class="p">{</span>
+    <span class="s1">'X-KEY'</span><span class="p">:</span> <span class="nx">API_KEY</span><span class="p">,</span>
+    <span class="s1">'X-SIGN'</span><span class="p">:</span> <span class="nx">sign</span><span class="p">,</span>
+    <span class="s1">'X-NONCE'</span><span class="p">:</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span>
+  <span class="p">};</span>
 <span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">getWallets</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">payload</span> <span class="o">=</span> <span class="p">{};</span>
+
+  <span class="kr">const</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">method</span><span class="p">:</span> <span class="s1">'get'</span><span class="p">,</span>
+    <span class="na">url</span><span class="p">:</span> <span class="s2">`</span><span class="p">${</span><span class="nx">BASE_URL</span><span class="p">}</span><span class="s2">/wallets/`</span><span class="p">,</span>
+    <span class="na">headers</span><span class="p">:</span> <span class="nx">getAuthHeaders</span><span class="p">(</span><span class="nx">payload</span><span class="p">)</span>
+  <span class="p">};</span>
+
+  <span class="nx">request</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">callback</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">createOrder</span><span class="p">(</span><span class="nx">order</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kr">const</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">method</span><span class="p">:</span> <span class="s1">'post'</span><span class="p">,</span>
+    <span class="na">url</span><span class="p">:</span> <span class="s2">`</span><span class="p">${</span><span class="nx">BASE_URL</span><span class="p">}</span><span class="s2">/order/`</span><span class="p">,</span>
+    <span class="na">headers</span><span class="p">:</span> <span class="nx">getAuthHeaders</span><span class="p">(</span><span class="nx">order</span><span class="p">),</span>
+    <span class="na">form</span><span class="p">:</span> <span class="nx">order</span><span class="p">,</span> <span class="c1">// API accepts urlencoded form or json. Use appropriate headers!</span>
+  <span class="p">};</span>
+
+  <span class="nx">request</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">callback</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// test</span>
+<span class="nx">getWallets</span><span class="p">((</span><span class="nx">error</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'error'</span><span class="p">,</span> <span class="nx">error</span><span class="p">);</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'body'</span><span class="p">,</span> <span class="nx">body</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="kr">const</span> <span class="nx">order</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">type</span><span class="p">:</span> <span class="s1">'buy'</span><span class="p">,</span>
+  <span class="na">pair</span><span class="p">:</span> <span class="s1">'BTC_USD'</span><span class="p">,</span>
+  <span class="na">amount</span><span class="p">:</span> <span class="s1">'0.0001'</span><span class="p">,</span>
+  <span class="na">price</span><span class="p">:</span> <span class="s1">'0.1'</span>
+<span class="p">};</span>
+
+<span class="nx">createOrder</span><span class="p">(</span><span class="nx">order</span><span class="p">,</span> <span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// get json, etc</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'error'</span><span class="p">,</span> <span class="nx">error</span><span class="p">);</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'body'</span><span class="p">,</span> <span class="nx">body</span><span class="p">);</span>
+<span class="p">});</span>
 </code></pre>
 <p>In order for access to private API methods, generate authorization keys <a href="https://btc-alpha.com/accounts/api/settings">in profile settings</a>.</p>
 
@@ -631,6 +678,7 @@ This method requires authorization.
 <p>Sample output</p>
 </blockquote>
 <pre class="highlight json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"success"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
   </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"buy"</span><span class="p">,</span><span class="w"> 
   </span><span class="s2">"date"</span><span class="p">:</span><span class="w"> </span><span class="mf">1483721079.51632</span><span class="p">,</span><span class="w"> 
   </span><span class="s2">"oid"</span><span class="p">:</span><span class="w"> </span><span class="mi">11268</span><span class="p">,</span><span class="w"> 
