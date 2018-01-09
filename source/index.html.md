@@ -37,6 +37,7 @@ API built on latest version of [socket.io](https://www.npmjs.com/package/socket.
 
 ```json
 {
+  "success": true,
   "date": 1485686507.0944622, 
   "oid": 15234,
   "type": "sell", 
@@ -60,9 +61,10 @@ API built on latest version of [socket.io](https://www.npmjs.com/package/socket.
 {
   "success": true,
   "date": 1485686413.5688234,
-  "oid": 15235, 
-  "type": "sell", 
+  "oid": 15235,
+  "cancel_order_id": 4535,
   "price": 935.23, 
+  "type": "sell", 
   "amount": 0.0123,
   "pair": "BTC_USD",
   "cancelled": true
@@ -109,30 +111,75 @@ def get_auth_headers(self, data):
 ```
 
 ```javascript
-var sortObj = require('sort-object');
-var hmacSha256 = require('crypto-js/hmac-sha256');
+const hmacSha256 = require('crypto-js/hmac-sha256'); // sha256 hash. or use you favorite u like
+const request = require('request'); // for http requests. or use you favorite u like
 
-function serializeObject (object) {
-    var str = '';
-    for (var key in object) {
-        if (str !== '')
-            str += '&';
+const BASE_URL = 'https://btc-alpha.com/api/v1';
+const API_KEY = '0000-0000...';
+const SECRET = 'Z%2........';
 
-        str += key + "=" + encodeURIComponent(object[key]);
-    }
-    return str;
+//Serialize for singing only. Can be used in request body if u like urlencoded form format instead of json
+function serializePayload(payload) {
+  return Object
+    .keys(payload) // get keys of payload object
+    .sort() // sort keys
+    .map((key) => key + "=" + encodeURIComponent(payload[key])) // each value should be url encoded. the most sensitive part for sign checking
+    .join('&'); // to sting, separate with ampersand
 }
 
-function getAuthHeaders (data) {
-    var message = 'your key' + serializeObject(sortObj(data));
-    var sign = hmacSha256(message, 'your secret').toString();
+// Generates auth headers
+function getAuthHeaders(payload) {
+  // get SHA256 of <API_KEY><sorted urlencoded payload string><SECRET>
+  const sign = hmacSha256(API_KEY + serializePayload(payload), SECRET).toString();
 
-    return {
-        'X-KEY': 'your key',
-        'X-SIGN': sign,
-        'X-NONCE': (new Date()).getTime()
-    };
+  return {
+    'X-KEY': API_KEY,
+    'X-SIGN': sign,
+    'X-NONCE': Date.now()
+  };
 }
+
+function getWallets(callback) {
+  payload = {};
+
+  const options = {
+    method: 'get',
+    url: `${BASE_URL}/wallets/`,
+    headers: getAuthHeaders(payload)
+  };
+
+  request(options, callback);
+}
+
+function createOrder(order, callback) {
+  const options = {
+    method: 'post',
+    url: `${BASE_URL}/order/`,
+    headers: getAuthHeaders(order),
+    form: order, // API accepts urlencoded form or json. Use appropriate headers!
+  };
+
+  request(options, callback);
+}
+
+// test
+getWallets((error, response, body) => {
+  console.log('error', error);
+  console.log('body', body);
+});
+
+const order = {
+  type: 'buy',
+  pair: 'BTC_USD',
+  amount: '0.0001',
+  price: '0.1'
+};
+
+createOrder(order, (error, response, body) => {
+  // get json, etc
+  console.log('error', error);
+  console.log('body', body);
+});
 ```
 
 In order for access to private API methods, generate authorization keys [in profile settings](https://btc-alpha.com/accounts/api/settings).
@@ -519,6 +566,7 @@ request.post({
 
 ```json
 {
+  "success": true,
   "type": "buy", 
   "date": 1483721079.51632, 
   "oid": 11268, 
