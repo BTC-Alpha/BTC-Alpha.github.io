@@ -307,7 +307,7 @@ params = {
     'limit': 1
     }
 
-response = requests.get('https://btc-alpha.com/api/v1/charts/BTC_USD/60/chart', params = params)
+response = requests.get('https://btc-alpha.com/api/charts/BTC_USD/60/chart', params = params)
 ```
 
 ```javascript
@@ -316,7 +316,7 @@ var request = require('request');
 var params = {limit: 1};
 
 request.get({
-                url: 'https://btc-alpha.com/api/v1/charts/BTC_USD/60/chart',
+                url: 'https://btc-alpha.com/api/charts/BTC_USD/60/chart',
                 qs: params
             }, function (error, response, body) {
                 // process response
@@ -352,7 +352,7 @@ D | 1 day
 
 ### HTTP Request
 
-`GET https://btc-alpha.com/api/v1/charts/<pair_symbol>/<timeframe>/chart`
+`GET https://btc-alpha.com/api/charts/<pair_symbol>/<timeframe>/chart`
 
 ### Query Parameters
 
