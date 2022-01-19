@@ -21,59 +21,28 @@ search: true
 
 Welcome to the BTC-Alpha API docs!
 
-Service btc-alpha.com provides open API for trading operations and broadcasting of all trading events. 
+Service btc-alpha.com provides open API for trading operations and broadcasting of all trading events.
 
 
 # Web Sockets API
 
-Currently Web Socket API can be used for getting the freshest info about lats trades, new and cancelled orders as well. Such as using socket connection reduce network overhead it's preferable way to get latest exchange rate and orderbook.
+Currently, the Web Socket API can be used to obtain up-to-date information about recent trades, new and cancelled orders. Since the use of a socket connection reduces the cost of the network, it is the preferred way to get the latest exchange rate and the order book.
 
-API built on latest version of [socket.io](https://www.npmjs.com/package/socket.io) library for Node.js. So it should be easy to get work with.
+>API built for the latest version of [socket.io](https://www.npmjs.com/package/socket.io) library for Node.js, so it should be easy to work with.
 
-## Orderbook events
+To start working with Web Socket API you have to connect `wss://btc-alpha.com/socket.v2/` and subscribe to necessary channels.
 
-> There are two types of order book notification messages
-> In case new order was created, you'll get information about order, what amount remained after operation and list of trades created after that order.   
+## Channels
+>After subscription, you will receive event `subscribe.success` which indicates that everything is ok.
 
-```json
-{
-  "success": true,
-  "date": 1485686507.0944622, 
-  "oid": 15234,
-  "type": "sell", 
-  "price": 935.23, 
-  "amount": 0.0, 
-  "trades": [
-    {
-      "tid": 14876, 
-      "type": "buy",
-      "price": "936.00", 
-      "amount": "0.1", 
-      "o_id": 15201
-     }
-  ]
-}
-```
+>In some cases you may want to receive more specific information from channel(when you want to receive trades only for BTC_USDT pair, for example). To handle this, you can subscribe to "sub-channel" by separating channel name and parameter with a dot(e.g. `trades.BTC_USDT`)
 
-> When order was cancelled by owner 
-
-```json
-{
-  "success": true,
-  "date": 1485686413.5688234,
-  "oid": 15235,
-  "cancel_order_id": 4535,
-  "price": 935.23, 
-  "type": "sell", 
-  "amount": 0.0123,
-  "pair": "BTC_USD",
-  "cancelled": true
-}
-```
-
-All you need to start receiving live information about orderbook is connect to `wss://btc-alpha.com` and subscribe to necessary channel.
-
-There are chanel names have pattern `book_<pair_name>` where `<pair_name>` is any pair available in service. For example `book_BTC_USD` or `book_BTC_ETH`. 
+Event | Channels | Description
+---| --- | ---
+ `ticker` |`ticker`, `ticker.<pair_symbol>` | Last price changes
+ `depth.diff` |`diff`, `diff.<pair_symbol>` | Market depth difference. Every event contain an `update_id` to identify merge sequence
+`trades` |`trades`, `trades.<pair_symbol>` | New trades
+`orderbook.20` | `orderbook.20`, `orderbook.20.<pair_symbol>`| Last 20 records from order-book
 
 
 # HTTP API (v1)
@@ -87,7 +56,7 @@ Some methods requires authorization [read below](#authorization).
 We have limit in 2 calls per second from single account to authorization required methods and 100 calls per secong from single IP address to public methods.
 </aside>
 
-All HTTP methods accept `JSON` formats of requests and responses if it not specified by headers.  
+All HTTP methods accept `JSON` formats of requests and responses if it not specified by headers.
 
 ## Authorization
 
@@ -207,7 +176,7 @@ response = requests.get('https://btc-alpha.com/api/v1/currencies/')
 var request = require('request');
 
 request.get('https://btc-alpha.com/api/v1/currencies/', function (error, response, body) {
-    // process response    
+    // process response
 });
 ```
 
@@ -216,13 +185,13 @@ request.get('https://btc-alpha.com/api/v1/currencies/', function (error, respons
 ```json
 [
   {
-    "sign": "Ƀ", 
+    "sign": "Ƀ",
     "short_name": "BTC"
-  }, 
+  },
   {
-    "sign": "Ξ", 
+    "sign": "Ξ",
     "short_name": "ETH"
-  } 
+  }
 ]
 ```
 
@@ -249,7 +218,7 @@ response = requests.get('https://btc-alpha.com/api/v1/pairs/')
 var request = require('request');
 
 request.get('https://btc-alpha.com/api/v1/pairs/', function (error, response, body) {
-    // process response    
+    // process response
 });
 ```
 
@@ -258,11 +227,11 @@ request.get('https://btc-alpha.com/api/v1/pairs/', function (error, response, bo
 ```json
 [
   {
-    "currency2": "USD", 
-    "maximum_order_size": 100000000.00000000, 
+    "currency2": "USD",
+    "maximum_order_size": 100000000.00000000,
     "minimum_order_size": 0.00000001,
-    "currency1": "BTC", 
-    "name": "BTC_USD", 
+    "currency1": "BTC",
+    "name": "BTC_USD",
     "price_precision": 3
    }
 ]
@@ -282,6 +251,117 @@ currency1 | all | Filter by first currency.
 currency2 | all | Filter by second currency.
 
 
+# Tickers
+
+
+
+```python
+import requests
+
+response = requests.get('https://btc-alpha.com/api/v1/ticker/')
+```
+
+```javascript
+var request = require('request');
+
+request.get('https://btc-alpha.com/api/v1/ticker/', function (error, response, body) {
+    // process response
+});
+```
+
+> Sample output
+
+```json
+[
+  {
+    "timestamp": 1642511387.55049,
+    "pair": "ETH_BTC",
+    "last": 0.076,
+    "diff": 0,
+    "vol": 0,
+    "high": 0,
+    "low": 0,
+    "buy": 0.071346,
+    "sell": 0.080317
+  }
+]
+```
+
+Used to fetch last price changes.
+
+### HTTP Request
+
+`GET https://btc-alpha.com/api/v1/ticker/`
+
+### Query Parameters
+
+Parameter | Default | Description
+--------- | ------- | -----------
+pair | all | Filter by pair symbol(e.g. BTC_USD)
+
+# Charts
+```python
+import requests
+
+params = {
+    'limit': 1
+    }
+
+response = requests.get('https://btc-alpha.com/api/v1/charts/BTC_USD/60/chart', params = params)
+```
+
+```javascript
+var request = require('request');
+
+var params = {limit: 1};
+
+request.get({
+                url: 'https://btc-alpha.com/api/v1/charts/BTC_USD/60/chart',
+                qs: params
+            }, function (error, response, body) {
+                // process response
+            }
+);
+```
+
+> Sample output
+
+```json
+[
+  {
+    "volume": 0.262929,
+    "high": 912.236,
+    "low": 910.086,
+    "close": 911.915,
+    "time": 1485777600,
+    "open": 910.424
+   }
+]
+```
+
+### Timeframes
+
+Value | Description
+--------- | -------
+5 | 5 minutes
+15 | 15 minutes
+30 | 30 minutes
+60 | 1 hour
+240 | 4 hours
+D | 1 day
+
+### HTTP Request
+
+`GET https://btc-alpha.com/api/v1/charts/<pair_symbol>/<timeframe>/chart`
+
+### Query Parameters
+
+Parameter | Default | Description
+--------- | ------- | -----------
+limit | 720 | Limiting results
+since | - | Since Timestamp
+until | - | Until Timestamp
+
 # Wallets
 
 
@@ -298,12 +378,12 @@ response = requests.get('https://btc-alpha.com/api/v1/wallets/', headers = get_a
 var request = require('request');
 
 request.get(
-    'https://btc-alpha.com/api/v1/wallets/', 
+    'https://btc-alpha.com/api/v1/wallets/',
     {
         headers: getAuthHeaders({})
-    }, 
+    },
     function (error, response, body) {
-        // process response    
+        // process response
     }
 );
 ```
@@ -313,8 +393,8 @@ request.get(
 ```json
 [
   {
-    "currency": "BTC", 
-    "balance": 0.00000000, 
+    "currency": "BTC",
+    "balance": 0.00000000,
     "reserve": 0.00000000
    }
 ]
@@ -353,7 +433,7 @@ Value | Status name | Description
 ```python
 import requests
 
-params = { 
+params = {
     limit_bids: 1,
     limit_asks: 1,
 }
@@ -372,7 +452,7 @@ var params = {
 };
 
 request.get({url: url, qs: params}, function (error, response, body) {
-        // process response    
+        // process response
     }
 );
 ```
@@ -383,17 +463,17 @@ request.get({url: url, qs: params}, function (error, response, body) {
 {
   "sell": [
     {
-      "price": 911.519, 
-      "id": 44667, 
-      "amount": 0.000446, 
+      "price": 911.519,
+      "id": 44667,
+      "amount": 0.000446,
       "timestamp": 1485777324.410015
      }
    ],
   "buy": [
     {
-      "price": 911.122, 
-      "id": 44647, 
-      "amount": 0.001233, 
+      "price": 911.122,
+      "id": 44647,
+      "amount": 0.001233,
       "timestamp": 1485777124.415542
     }
   ]
@@ -406,14 +486,14 @@ request.get({url: url, qs: params}, function (error, response, body) {
 {
   "sell": [
     {
-      "price": 911.519, 
-      "amount": 0.000446 
+      "price": 911.519,
+      "amount": 0.000446
      }
    ],
   "buy": [
     {
-      "price": 911.122, 
-      "amount": 0.001233 
+      "price": 911.122,
+      "amount": 0.001233
     }
   ]
 }
@@ -446,7 +526,7 @@ response = requests.get('https://btc-alpha.com/api/v1/orders/own/', headers = ge
 var request = require('request');
 
 request.get('https://btc-alpha.com/api/v1/orders/own/', {headers: getAuthHeaders({})}, function (error, response, body) {
-    // process response    
+    // process response
 });
 ```
 
@@ -455,10 +535,10 @@ request.get('https://btc-alpha.com/api/v1/orders/own/', {headers: getAuthHeaders
 ```json
 [
   {
-    "amount": 0.500000000, 
-    "pair": "ETH_USD", 
-    "type": "buy", 
-    "status": 3, 
+    "amount": 0.500000000,
+    "pair": "ETH_USD",
+    "type": "buy",
+    "status": 3,
     "price": 0.00113000,
     "id": 11249
   }
@@ -501,7 +581,7 @@ var request = require('request');
 var oid = 53189;
 
 request.get('https://btc-alpha.com/api/v1/order/' + oid + '/', function (error, response, body) {
-    // process response    
+    // process response
 });
 ```
 
@@ -513,7 +593,7 @@ request.get('https://btc-alpha.com/api/v1/order/' + oid + '/', function (error, 
   "pair": "BTC_USD",
   "type": "buy",
   "status": "1",
-  "price": 870.69000000, 
+  "price": 870.69000000,
   "id": 11259
 }
 ```
@@ -548,7 +628,7 @@ var order = {
     type: 'buy',
     pair: 'BTC_USD',
     amount: '1.0',
-    price: '870.69'    
+    price: '870.69'
 };
 
 request.post({
@@ -567,17 +647,17 @@ request.post({
 ```json
 {
   "success": true,
-  "type": "buy", 
-  "date": 1483721079.51632, 
-  "oid": 11268, 
-  "price": 870.69000000, 
+  "type": "buy",
+  "date": 1483721079.51632,
+  "oid": 11268,
+  "price": 870.69000000,
   "amount": 0.00000000,
   "trades": [
     {
-      "type": "sell", 
-      "price": 870.69000000, 
-      "o_id": 11266, 
-      "amount": 0.00010000, 
+      "type": "sell",
+      "price": 870.69000000,
+      "o_id": 11266,
+      "amount": 0.00010000,
       "tid": 6049
     }
   ]
@@ -629,7 +709,7 @@ request.post({
         form: data,
         headers: getAuthHeaders(data)
     }, function (error, response, body) {
-        // process response    
+        // process response
     }
 );
 ```
@@ -646,7 +726,7 @@ request.post({
 This method requires authorization.
 </aside>
 
-Cancel your **active** order. If order not exists, it's done or cancelled error message will be returned. 
+Cancel your **active** order. If order not exists, it's done or cancelled error message will be returned.
 
 ### HTTP Request
 
@@ -675,7 +755,7 @@ response = requests.get('https://btc-alpha.com/api/v1/exchanges/')
 var request = require('request');
 
 request.get('https://btc-alpha.com/api/v1/exchanges/', function (error, response, body) {
-    // process response    
+    // process response
 });
 ```
 
@@ -684,10 +764,10 @@ request.get('https://btc-alpha.com/api/v1/exchanges/', function (error, response
 ```json
 [
   {
-    "id": 6030, 
-    "price": 839.36000000, 
-    "pair": "BTC_USD", 
-    "type": "sell", 
+    "id": 6030,
+    "price": 839.36000000,
+    "pair": "BTC_USD",
+    "type": "sell",
     "timestamp": 1483705817.735508,
     "amount": 0.00281167
   }
@@ -750,7 +830,7 @@ request.get({
                 url: 'https://btc-alpha.com/api/v1/deposits/',
                 headers: getAuthHeaders({})
             }, function (error, response, body) {
-                // process response    
+                // process response
             }
 );
 ```
@@ -758,9 +838,9 @@ request.get({
 ```json
 [
   {
-    "timestamp": 1485363039.18359, 
-    "id": 317, 
-    "currency": "BTC", 
+    "timestamp": 1485363039.18359,
+    "id": 317,
+    "currency": "BTC",
     "amount": 530.00000000
   }
 ]
@@ -784,7 +864,7 @@ List your deposits
 Value | Status name | Description
 --------- | ----------- | -----------
 10 | New | Withdraw created, verification need
-20 | Verified | Withdraw verified, waiting for approving 
+20 | Verified | Withdraw verified, waiting for approving
 30 | Approved | Approved by moderator
 40 | Refused | Refused by moderator. See your email for more details
 50 | Canceled | Cancelled by user
@@ -804,7 +884,7 @@ request.get({
         url: 'https://btc-alpha.com/api/v1/withdraws/',
         headers: getAuthHeaders({})
     }, function (error, response, body) {
-        // process response    
+        // process response
     }
 );
 ```
@@ -814,10 +894,10 @@ request.get({
 ```json
 [
   {
-    "id": 403, 
-    "timestamp": 1485363466.868539, 
-    "currency": "BTC", 
-    "amount": 0.53000000, 
+    "id": 403,
+    "timestamp": 1485363466.868539,
+    "currency": "BTC",
+    "amount": 0.53000000,
     "status": 20
   }
 ]
@@ -839,69 +919,3 @@ Parameter | Default | Description
 --------- | ------- | -----------
 currency_id | all | Filter currency.
 status | all | Filter by status.
-
-# Charts
-
-```python
-import requests
-
-params = {
-    'limit': 1
-    }
-
-response = requests.get('https://btc-alpha.com/api/charts/BTC_USD/60/chart', params = params)
-```
-
-```javascript
-var request = require('request');
-
-var params = {limit: 1};
-
-request.get({
-                url: 'https://btc-alpha.com/api/charts/BTC_USD/60/chart',
-                qs: params
-            }, function (error, response, body) {
-                // process response    
-            }
-);
-```
-
-> Sample output
-
-```json
-[
-  {
-    "volume": 0.262929, 
-    "high": 912.236, 
-    "low": 910.086, 
-    "close": 911.915, 
-    "time": 1485777600, 
-    "open": 910.424
-   }
-]
-```
-
-### Chart types
-
-Type value | Type name
---------- | -------
-1 | 1 minute
-5 | 5 minutes
-15 | 15 minutes
-30 | 30 minutes
-60 | 1 hour
-240 | 4 hours
-D | 1 day
-
-### HTTP Request
-
-`GET https://btc-alpha.com/api/charts/<pair>/<type>/chart`
-
-### Query Parameters
-
-Parameter | Default | Description
---------- | ------- | -----------
-limit | 720 | Limiting results
-since | None | Since Timestamp
-until | None | Until Timestamp
-
