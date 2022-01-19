@@ -122,56 +122,54 @@
 
 <p>Welcome to the BTC-Alpha API docs!</p>
 
-<p>Service btc-alpha.com provides open API for trading operations and broadcasting of all trading events. </p>
+<p>Service btc-alpha.com provides open API for trading operations and broadcasting of all trading events.</p>
 
 <h1 id="web-sockets-api">Web Sockets API</h1>
 
-<p>Currently Web Socket API can be used for getting the freshest info about lats trades, new and cancelled orders as well. Such as using socket connection reduce network overhead it&rsquo;s preferable way to get latest exchange rate and orderbook.</p>
-
-<p>API built on latest version of <a href="https://www.npmjs.com/package/socket.io">socket.io</a> library for Node.js. So it should be easy to get work with.</p>
-
-<h2 id="orderbook-events">Orderbook events</h2>
+<p>Currently, the Web Socket API can be used to obtain up-to-date information about recent trades, new and cancelled orders. Since the use of a socket connection reduces the cost of the network, it is the preferred way to get the latest exchange rate and the order book.</p>
 
 <blockquote>
-<p>There are two types of order book notification messages
-In case new order was created, you&rsquo;ll get information about order, what amount remained after operation and list of trades created after that order.   </p>
+<p>API built for the latest version of <a href="https://www.npmjs.com/package/socket.io">socket.io</a> library for Node.js, so it should be easy to work with.</p>
 </blockquote>
-<pre class="highlight json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"success"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"date"</span><span class="p">:</span><span class="w"> </span><span class="mf">1485686507.0944622</span><span class="p">,</span><span class="w"> 
-  </span><span class="s2">"oid"</span><span class="p">:</span><span class="w"> </span><span class="mi">15234</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sell"</span><span class="p">,</span><span class="w"> 
-  </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">935.23</span><span class="p">,</span><span class="w"> 
-  </span><span class="s2">"amount"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> 
-  </span><span class="s2">"trades"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-    </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"tid"</span><span class="p">:</span><span class="w"> </span><span class="mi">14876</span><span class="p">,</span><span class="w"> 
-      </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"buy"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="s2">"936.00"</span><span class="p">,</span><span class="w"> 
-      </span><span class="s2">"amount"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.1"</span><span class="p">,</span><span class="w"> 
-      </span><span class="s2">"o_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">15201</span><span class="w">
-     </span><span class="p">}</span><span class="w">
-  </span><span class="p">]</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-<blockquote>
-<p>When order was cancelled by owner </p>
-</blockquote>
-<pre class="highlight json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"success"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"date"</span><span class="p">:</span><span class="w"> </span><span class="mf">1485686413.5688234</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"oid"</span><span class="p">:</span><span class="w"> </span><span class="mi">15235</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"cancel_order_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">4535</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">935.23</span><span class="p">,</span><span class="w"> 
-  </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sell"</span><span class="p">,</span><span class="w"> 
-  </span><span class="s2">"amount"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0123</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"pair"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC_USD"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"cancelled"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-<p>All you need to start receiving live information about orderbook is connect to <code class="prettyprint">wss://btc-alpha.com</code> and subscribe to necessary channel.</p>
 
-<p>There are chanel names have pattern <code class="prettyprint">book_&lt;pair_name&gt;</code> where <code class="prettyprint">&lt;pair_name&gt;</code> is any pair available in service. For example <code class="prettyprint">book_BTC_USD</code> or <code class="prettyprint">book_BTC_ETH</code>. </p>
+<p>To start working with Web Socket API you have to connect <code class="prettyprint">wss://btc-alpha.com/socket.v2/</code> and subscribe to necessary channels.</p>
+
+<h2 id="channels">Channels</h2>
+
+<blockquote>
+<p>After subscription, you will receive event <code class="prettyprint">subscribe.success</code> which indicates that everything is ok.</p>
+
+<p>In some cases you may want to receive more specific information from channel(when you want to receive trades only for BTC_USDT pair, for example). To handle this, you can subscribe to &ldquo;sub-channel&rdquo; by separating channel name and parameter with a dot(e.g. <code class="prettyprint">trades.BTC_USDT</code>)</p>
+</blockquote>
+
+<table><thead>
+<tr>
+<th>Event</th>
+<th>Channels</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">ticker</code></td>
+<td><code class="prettyprint">ticker</code>, <code class="prettyprint">ticker.&lt;pair_symbol&gt;</code></td>
+<td>Last price changes</td>
+</tr>
+<tr>
+<td><code class="prettyprint">depth.diff</code></td>
+<td><code class="prettyprint">diff</code>, <code class="prettyprint">diff.&lt;pair_symbol&gt;</code></td>
+<td>Market depth difference. Every event contain an <code class="prettyprint">update_id</code> to identify merge sequence</td>
+</tr>
+<tr>
+<td><code class="prettyprint">trades</code></td>
+<td><code class="prettyprint">trades</code>, <code class="prettyprint">trades.&lt;pair_symbol&gt;</code></td>
+<td>New trades</td>
+</tr>
+<tr>
+<td><code class="prettyprint">orderbook.20</code></td>
+<td><code class="prettyprint">orderbook.20</code>, <code class="prettyprint">orderbook.20.&lt;pair_symbol&gt;</code></td>
+<td>Last 20 records from order-book</td>
+</tr>
+</tbody></table>
 
 <h1 id="http-api-v1">HTTP API (v1)</h1>
 
@@ -183,7 +181,7 @@ In case new order was created, you&rsquo;ll get information about order, what am
 We have limit in 2 calls per second from single account to authorization required methods and 100 calls per secong from single IP address to public methods.
 </aside>
 
-<p>All HTTP methods accept <code class="prettyprint">JSON</code> formats of requests and responses if it not specified by headers.  </p>
+<p>All HTTP methods accept <code class="prettyprint">JSON</code> formats of requests and responses if it not specified by headers.</p>
 
 <h2 id="authorization">Authorization</h2>
 
@@ -293,7 +291,7 @@ We have limit in 2 calls per second from single account to authorization require
 </code></pre><pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'request'</span><span class="p">);</span>
 
 <span class="nx">request</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'https://btc-alpha.com/api/v1/currencies/'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// process response    </span>
+    <span class="c1">// process response</span>
 <span class="p">});</span>
 </code></pre>
 <blockquote>
@@ -301,20 +299,20 @@ We have limit in 2 calls per second from single account to authorization require
 </blockquote>
 <pre class="highlight json"><code><span class="p">[</span><span class="w">
   </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"sign"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Ƀ"</span><span class="p">,</span><span class="w"> 
+    </span><span class="s2">"sign"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Ƀ"</span><span class="p">,</span><span class="w">
     </span><span class="s2">"short_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC"</span><span class="w">
-  </span><span class="p">},</span><span class="w"> 
+  </span><span class="p">},</span><span class="w">
   </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"sign"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Ξ"</span><span class="p">,</span><span class="w"> 
+    </span><span class="s2">"sign"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Ξ"</span><span class="p">,</span><span class="w">
     </span><span class="s2">"short_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ETH"</span><span class="w">
-  </span><span class="p">}</span><span class="w"> 
+  </span><span class="p">}</span><span class="w">
 </span><span class="p">]</span><span class="w">
 </span></code></pre>
 <p>Returns information about all available currencies.</p>
 
 <h3 id="http-request">HTTP Request</h3>
 
-<p><code class="prettyprint">GET https://btc-alpha.com/api/v1/currencies/</code></p>
+<p><code class="prettyprint">GET https://btc-alpha.com/api/v1/pairs/</code></p>
 
 <h1 id="pairs">Pairs</h1>
 
@@ -325,7 +323,7 @@ We have limit in 2 calls per second from single account to authorization require
 </code></pre><pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'request'</span><span class="p">);</span>
 
 <span class="nx">request</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'https://btc-alpha.com/api/v1/pairs/'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// process response    </span>
+    <span class="c1">// process response</span>
 <span class="p">});</span>
 </code></pre>
 <blockquote>
@@ -333,11 +331,11 @@ We have limit in 2 calls per second from single account to authorization require
 </blockquote>
 <pre class="highlight json"><code><span class="p">[</span><span class="w">
   </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"currency2"</span><span class="p">:</span><span class="w"> </span><span class="s2">"USD"</span><span class="p">,</span><span class="w"> 
-    </span><span class="s2">"maximum_order_size"</span><span class="p">:</span><span class="w"> </span><span class="mf">100000000.00000000</span><span class="p">,</span><span class="w"> 
+    </span><span class="s2">"currency2"</span><span class="p">:</span><span class="w"> </span><span class="s2">"USD"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"maximum_order_size"</span><span class="p">:</span><span class="w"> </span><span class="mf">100000000.00000000</span><span class="p">,</span><span class="w">
     </span><span class="s2">"minimum_order_size"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.00000001</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"currency1"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC"</span><span class="p">,</span><span class="w"> 
-    </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC_USD"</span><span class="p">,</span><span class="w"> 
+    </span><span class="s2">"currency1"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC_USD"</span><span class="p">,</span><span class="w">
     </span><span class="s2">"price_precision"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="w">
    </span><span class="p">}</span><span class="w">
 </span><span class="p">]</span><span class="w">
@@ -369,6 +367,153 @@ We have limit in 2 calls per second from single account to authorization require
 </tr>
 </tbody></table>
 
+<h1 id="tickers">Tickers</h1>
+<pre class="highlight python"><code><span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'https://btc-alpha.com/api/v1/ticker/'</span><span class="p">)</span>
+</code></pre><pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'request'</span><span class="p">);</span>
+
+<span class="nx">request</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'https://btc-alpha.com/api/v1/ticker/'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// process response</span>
+<span class="p">});</span>
+</code></pre>
+<blockquote>
+<p>Sample output</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">[</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="mf">1642511387.55049</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"pair"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ETH_BTC"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"last"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.076</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"diff"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"vol"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"high"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"low"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"buy"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.071346</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"sell"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.080317</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span></code></pre>
+<p>Used to fetch last price changes.</p>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">GET https://btc-alpha.com/api/v1/ticker/</code></p>
+
+<h3 id="query-parameters">Query Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>pair</td>
+<td>all</td>
+<td>Filter by pair symbol(e.g. BTC_USD)</td>
+</tr>
+</tbody></table>
+
+<h1 id="charts">Charts</h1>
+<pre class="highlight python"><code><span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'limit'</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">}</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'https://btc-alpha.com/api/charts/BTC_USD/60/chart'</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="p">)</span>
+</code></pre><pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'request'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">params</span> <span class="o">=</span> <span class="p">{</span><span class="na">limit</span><span class="p">:</span> <span class="mi">1</span><span class="p">};</span>
+
+<span class="nx">request</span><span class="p">.</span><span class="nx">get</span><span class="p">({</span>
+                <span class="na">url</span><span class="p">:</span> <span class="s1">'https://btc-alpha.com/api/charts/BTC_USD/60/chart'</span><span class="p">,</span>
+                <span class="na">qs</span><span class="p">:</span> <span class="nx">params</span>
+            <span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+                <span class="c1">// process response</span>
+            <span class="p">}</span>
+<span class="p">);</span>
+</code></pre>
+<blockquote>
+<p>Sample output</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">[</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"volume"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.262929</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"high"</span><span class="p">:</span><span class="w"> </span><span class="mf">912.236</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"low"</span><span class="p">:</span><span class="w"> </span><span class="mf">910.086</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"close"</span><span class="p">:</span><span class="w"> </span><span class="mf">911.915</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"time"</span><span class="p">:</span><span class="w"> </span><span class="mi">1485777600</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"open"</span><span class="p">:</span><span class="w"> </span><span class="mf">910.424</span><span class="w">
+   </span><span class="p">}</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span></code></pre>
+<h3 id="timeframes">Timeframes</h3>
+
+<table><thead>
+<tr>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>5</td>
+<td>5 minutes</td>
+</tr>
+<tr>
+<td>15</td>
+<td>15 minutes</td>
+</tr>
+<tr>
+<td>30</td>
+<td>30 minutes</td>
+</tr>
+<tr>
+<td>60</td>
+<td>1 hour</td>
+</tr>
+<tr>
+<td>240</td>
+<td>4 hours</td>
+</tr>
+<tr>
+<td>D</td>
+<td>1 day</td>
+</tr>
+</tbody></table>
+
+<h3 id="http-request">HTTP Request</h3>
+
+<p><code class="prettyprint">GET https://btc-alpha.com/api/charts/&lt;pair_symbol&gt;/&lt;timeframe&gt;/chart</code></p>
+
+<h3 id="query-parameters">Query Parameters</h3>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>limit</td>
+<td>720</td>
+<td>Limiting results</td>
+</tr>
+<tr>
+<td>since</td>
+<td>-</td>
+<td>Since Timestamp</td>
+</tr>
+<tr>
+<td>until</td>
+<td>-</td>
+<td>Until Timestamp</td>
+</tr>
+</tbody></table>
+
 <h1 id="wallets">Wallets</h1>
 
 <h2 id="list-own-wallets">List own wallets</h2>
@@ -378,12 +523,12 @@ We have limit in 2 calls per second from single account to authorization require
 </code></pre><pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'request'</span><span class="p">);</span>
 
 <span class="nx">request</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span>
-    <span class="s1">'https://btc-alpha.com/api/v1/wallets/'</span><span class="p">,</span> 
+    <span class="s1">'https://btc-alpha.com/api/v1/wallets/'</span><span class="p">,</span>
     <span class="p">{</span>
         <span class="na">headers</span><span class="p">:</span> <span class="nx">getAuthHeaders</span><span class="p">({})</span>
-    <span class="p">},</span> 
+    <span class="p">},</span>
     <span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// process response    </span>
+        <span class="c1">// process response</span>
     <span class="p">}</span>
 <span class="p">);</span>
 </code></pre>
@@ -392,8 +537,8 @@ We have limit in 2 calls per second from single account to authorization require
 </blockquote>
 <pre class="highlight json"><code><span class="p">[</span><span class="w">
   </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC"</span><span class="p">,</span><span class="w"> 
-    </span><span class="s2">"balance"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.00000000</span><span class="p">,</span><span class="w"> 
+    </span><span class="s2">"currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"balance"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.00000000</span><span class="p">,</span><span class="w">
     </span><span class="s2">"reserve"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.00000000</span><span class="w">
    </span><span class="p">}</span><span class="w">
 </span><span class="p">]</span><span class="w">
@@ -455,7 +600,7 @@ This method requires authorization.
 <h2 id="get-orderbook">Get orderbook</h2>
 <pre class="highlight python"><code><span class="kn">import</span> <span class="nn">requests</span>
 
-<span class="n">params</span> <span class="o">=</span> <span class="p">{</span> 
+<span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
     <span class="n">limit_bids</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">limit_asks</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
 <span class="p">}</span>
@@ -471,7 +616,7 @@ This method requires authorization.
 <span class="p">};</span>
 
 <span class="nx">request</span><span class="p">.</span><span class="nx">get</span><span class="p">({</span><span class="na">url</span><span class="p">:</span> <span class="nx">url</span><span class="p">,</span> <span class="na">qs</span><span class="p">:</span> <span class="nx">params</span><span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// process response    </span>
+        <span class="c1">// process response</span>
     <span class="p">}</span>
 <span class="p">);</span>
 </code></pre>
@@ -481,17 +626,17 @@ This method requires authorization.
 <pre class="highlight json"><code><span class="p">{</span><span class="w">
   </span><span class="s2">"sell"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
     </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">911.519</span><span class="p">,</span><span class="w"> 
-      </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">44667</span><span class="p">,</span><span class="w"> 
-      </span><span class="s2">"amount"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.000446</span><span class="p">,</span><span class="w"> 
+      </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">911.519</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">44667</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"amount"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.000446</span><span class="p">,</span><span class="w">
       </span><span class="s2">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="mf">1485777324.410015</span><span class="w">
      </span><span class="p">}</span><span class="w">
    </span><span class="p">],</span><span class="w">
   </span><span class="s2">"buy"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
     </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">911.122</span><span class="p">,</span><span class="w"> 
-      </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">44647</span><span class="p">,</span><span class="w"> 
-      </span><span class="s2">"amount"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.001233</span><span class="p">,</span><span class="w"> 
+      </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">911.122</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">44647</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"amount"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.001233</span><span class="p">,</span><span class="w">
       </span><span class="s2">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="mf">1485777124.415542</span><span class="w">
     </span><span class="p">}</span><span class="w">
   </span><span class="p">]</span><span class="w">
@@ -503,14 +648,14 @@ This method requires authorization.
 <pre class="highlight json"><code><span class="p">{</span><span class="w">
   </span><span class="s2">"sell"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
     </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">911.519</span><span class="p">,</span><span class="w"> 
-      </span><span class="s2">"amount"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.000446</span><span class="w"> 
+      </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">911.519</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"amount"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.000446</span><span class="w">
      </span><span class="p">}</span><span class="w">
    </span><span class="p">],</span><span class="w">
   </span><span class="s2">"buy"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
     </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">911.122</span><span class="p">,</span><span class="w"> 
-      </span><span class="s2">"amount"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.001233</span><span class="w"> 
+      </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">911.122</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"amount"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.001233</span><span class="w">
     </span><span class="p">}</span><span class="w">
   </span><span class="p">]</span><span class="w">
 </span><span class="p">}</span><span class="w">
@@ -554,7 +699,7 @@ This method requires authorization.
 </code></pre><pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'request'</span><span class="p">);</span>
 
 <span class="nx">request</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'https://btc-alpha.com/api/v1/orders/own/'</span><span class="p">,</span> <span class="p">{</span><span class="na">headers</span><span class="p">:</span> <span class="nx">getAuthHeaders</span><span class="p">({})},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// process response    </span>
+    <span class="c1">// process response</span>
 <span class="p">});</span>
 </code></pre>
 <blockquote>
@@ -562,10 +707,10 @@ This method requires authorization.
 </blockquote>
 <pre class="highlight json"><code><span class="p">[</span><span class="w">
   </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"amount"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.500000000</span><span class="p">,</span><span class="w"> 
-    </span><span class="s2">"pair"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ETH_USD"</span><span class="p">,</span><span class="w"> 
-    </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"buy"</span><span class="p">,</span><span class="w"> 
-    </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> 
+    </span><span class="s2">"amount"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.500000000</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"pair"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ETH_USD"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"buy"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">
     </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.00113000</span><span class="p">,</span><span class="w">
     </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">11249</span><span class="w">
   </span><span class="p">}</span><span class="w">
@@ -623,7 +768,7 @@ This method requires authorization.
 <span class="kd">var</span> <span class="nx">oid</span> <span class="o">=</span> <span class="mi">53189</span><span class="p">;</span>
 
 <span class="nx">request</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'https://btc-alpha.com/api/v1/order/'</span> <span class="o">+</span> <span class="nx">oid</span> <span class="o">+</span> <span class="s1">'/'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// process response    </span>
+    <span class="c1">// process response</span>
 <span class="p">});</span>
 </code></pre>
 <blockquote>
@@ -634,7 +779,7 @@ This method requires authorization.
   </span><span class="s2">"pair"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC_USD"</span><span class="p">,</span><span class="w">
   </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"buy"</span><span class="p">,</span><span class="w">
   </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">870.69000000</span><span class="p">,</span><span class="w"> 
+  </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">870.69000000</span><span class="p">,</span><span class="w">
   </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">11259</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
@@ -661,7 +806,7 @@ This method requires authorization.
     <span class="na">type</span><span class="p">:</span> <span class="s1">'buy'</span><span class="p">,</span>
     <span class="na">pair</span><span class="p">:</span> <span class="s1">'BTC_USD'</span><span class="p">,</span>
     <span class="na">amount</span><span class="p">:</span> <span class="s1">'1.0'</span><span class="p">,</span>
-    <span class="na">price</span><span class="p">:</span> <span class="s1">'870.69'</span>    
+    <span class="na">price</span><span class="p">:</span> <span class="s1">'870.69'</span>
 <span class="p">};</span>
 
 <span class="nx">request</span><span class="p">.</span><span class="nx">post</span><span class="p">({</span>
@@ -679,17 +824,17 @@ This method requires authorization.
 </blockquote>
 <pre class="highlight json"><code><span class="p">{</span><span class="w">
   </span><span class="s2">"success"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"buy"</span><span class="p">,</span><span class="w"> 
-  </span><span class="s2">"date"</span><span class="p">:</span><span class="w"> </span><span class="mf">1483721079.51632</span><span class="p">,</span><span class="w"> 
-  </span><span class="s2">"oid"</span><span class="p">:</span><span class="w"> </span><span class="mi">11268</span><span class="p">,</span><span class="w"> 
-  </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">870.69000000</span><span class="p">,</span><span class="w"> 
+  </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"buy"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"date"</span><span class="p">:</span><span class="w"> </span><span class="mf">1483721079.51632</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"oid"</span><span class="p">:</span><span class="w"> </span><span class="mi">11268</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">870.69000000</span><span class="p">,</span><span class="w">
   </span><span class="s2">"amount"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.00000000</span><span class="p">,</span><span class="w">
   </span><span class="s2">"trades"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
     </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sell"</span><span class="p">,</span><span class="w"> 
-      </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">870.69000000</span><span class="p">,</span><span class="w"> 
-      </span><span class="s2">"o_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">11266</span><span class="p">,</span><span class="w"> 
-      </span><span class="s2">"amount"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.00010000</span><span class="p">,</span><span class="w"> 
+      </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sell"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">870.69000000</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"o_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">11266</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"amount"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.00010000</span><span class="p">,</span><span class="w">
       </span><span class="s2">"tid"</span><span class="p">:</span><span class="w"> </span><span class="mi">6049</span><span class="w">
     </span><span class="p">}</span><span class="w">
   </span><span class="p">]</span><span class="w">
@@ -750,7 +895,7 @@ This method requires authorization.
         <span class="na">form</span><span class="p">:</span> <span class="nx">data</span><span class="p">,</span>
         <span class="na">headers</span><span class="p">:</span> <span class="nx">getAuthHeaders</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
     <span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// process response    </span>
+        <span class="c1">// process response</span>
     <span class="p">}</span>
 <span class="p">);</span>
 </code></pre>
@@ -765,7 +910,7 @@ This method requires authorization.
 This method requires authorization.
 </aside>
 
-<p>Cancel your <strong>active</strong> order. If order not exists, it&rsquo;s done or cancelled error message will be returned. </p>
+<p>Cancel your <strong>active</strong> order. If order not exists, it&rsquo;s done or cancelled error message will be returned.</p>
 
 <h3 id="http-request">HTTP Request</h3>
 
@@ -794,7 +939,7 @@ This method requires authorization.
 </code></pre><pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'request'</span><span class="p">);</span>
 
 <span class="nx">request</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'https://btc-alpha.com/api/v1/exchanges/'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// process response    </span>
+    <span class="c1">// process response</span>
 <span class="p">});</span>
 </code></pre>
 <blockquote>
@@ -802,10 +947,10 @@ This method requires authorization.
 </blockquote>
 <pre class="highlight json"><code><span class="p">[</span><span class="w">
   </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">6030</span><span class="p">,</span><span class="w"> 
-    </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">839.36000000</span><span class="p">,</span><span class="w"> 
-    </span><span class="s2">"pair"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC_USD"</span><span class="p">,</span><span class="w"> 
-    </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sell"</span><span class="p">,</span><span class="w"> 
+    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">6030</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"price"</span><span class="p">:</span><span class="w"> </span><span class="mf">839.36000000</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"pair"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC_USD"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sell"</span><span class="p">,</span><span class="w">
     </span><span class="s2">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="mf">1483705817.735508</span><span class="p">,</span><span class="w">
     </span><span class="s2">"amount"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.00281167</span><span class="w">
   </span><span class="p">}</span><span class="w">
@@ -837,7 +982,7 @@ This method requires authorization.
 <tr>
 <td>offset</td>
 <td>0</td>
-<td>Skip number of records. <i>Currencty limited up to 100000</i></td>
+<td>Skip number of records.</td>
 </tr>
 <tr>
 <td>ordering</td>
@@ -885,7 +1030,7 @@ This method requires authorization.
 <tr>
 <td>offset</td>
 <td>0</td>
-<td>Skip number of records. <i>Currencty limited up to 100000</i></td>
+<td>Skip number of records.</td>
 </tr>
 <tr>
 <td>ordering</td>
@@ -906,14 +1051,14 @@ This method requires authorization.
                 <span class="na">url</span><span class="p">:</span> <span class="s1">'https://btc-alpha.com/api/v1/deposits/'</span><span class="p">,</span>
                 <span class="na">headers</span><span class="p">:</span> <span class="nx">getAuthHeaders</span><span class="p">({})</span>
             <span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
-                <span class="c1">// process response    </span>
+                <span class="c1">// process response</span>
             <span class="p">}</span>
 <span class="p">);</span>
 </code></pre><pre class="highlight json"><code><span class="p">[</span><span class="w">
   </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="mf">1485363039.18359</span><span class="p">,</span><span class="w"> 
-    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">317</span><span class="p">,</span><span class="w"> 
-    </span><span class="s2">"currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC"</span><span class="p">,</span><span class="w"> 
+    </span><span class="s2">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="mf">1485363039.18359</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">317</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC"</span><span class="p">,</span><span class="w">
     </span><span class="s2">"amount"</span><span class="p">:</span><span class="w"> </span><span class="mf">530.00000000</span><span class="w">
   </span><span class="p">}</span><span class="w">
 </span><span class="p">]</span><span class="w">
@@ -976,7 +1121,7 @@ This method requires authorization.
         <span class="na">url</span><span class="p">:</span> <span class="s1">'https://btc-alpha.com/api/v1/withdraws/'</span><span class="p">,</span>
         <span class="na">headers</span><span class="p">:</span> <span class="nx">getAuthHeaders</span><span class="p">({})</span>
     <span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// process response    </span>
+        <span class="c1">// process response</span>
     <span class="p">}</span>
 <span class="p">);</span>
 </code></pre>
@@ -985,10 +1130,10 @@ This method requires authorization.
 </blockquote>
 <pre class="highlight json"><code><span class="p">[</span><span class="w">
   </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">403</span><span class="p">,</span><span class="w"> 
-    </span><span class="s2">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="mf">1485363466.868539</span><span class="p">,</span><span class="w"> 
-    </span><span class="s2">"currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC"</span><span class="p">,</span><span class="w"> 
-    </span><span class="s2">"amount"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.53000000</span><span class="p">,</span><span class="w"> 
+    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">403</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="mf">1485363466.868539</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"currency"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BTC"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"amount"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.53000000</span><span class="p">,</span><span class="w">
     </span><span class="s2">"status"</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="w">
   </span><span class="p">}</span><span class="w">
 </span><span class="p">]</span><span class="w">
@@ -1021,108 +1166,6 @@ This method requires authorization.
 <td>status</td>
 <td>all</td>
 <td>Filter by status.</td>
-</tr>
-</tbody></table>
-
-<h1 id="charts">Charts</h1>
-<pre class="highlight python"><code><span class="kn">import</span> <span class="nn">requests</span>
-
-<span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s">'limit'</span><span class="p">:</span> <span class="mi">1</span>
-    <span class="p">}</span>
-
-<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'https://btc-alpha.com/api/charts/BTC_USD/60/chart'</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="p">)</span>
-</code></pre><pre class="highlight javascript"><code><span class="kd">var</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'request'</span><span class="p">);</span>
-
-<span class="kd">var</span> <span class="nx">params</span> <span class="o">=</span> <span class="p">{</span><span class="na">limit</span><span class="p">:</span> <span class="mi">1</span><span class="p">};</span>
-
-<span class="nx">request</span><span class="p">.</span><span class="nx">get</span><span class="p">({</span>
-                <span class="na">url</span><span class="p">:</span> <span class="s1">'https://btc-alpha.com/api/charts/BTC_USD/60/chart'</span><span class="p">,</span>
-                <span class="na">qs</span><span class="p">:</span> <span class="nx">params</span>
-            <span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
-                <span class="c1">// process response    </span>
-            <span class="p">}</span>
-<span class="p">);</span>
-</code></pre>
-<blockquote>
-<p>Sample output</p>
-</blockquote>
-<pre class="highlight json"><code><span class="p">[</span><span class="w">
-  </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"volume"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.262929</span><span class="p">,</span><span class="w"> 
-    </span><span class="s2">"high"</span><span class="p">:</span><span class="w"> </span><span class="mf">912.236</span><span class="p">,</span><span class="w"> 
-    </span><span class="s2">"low"</span><span class="p">:</span><span class="w"> </span><span class="mf">910.086</span><span class="p">,</span><span class="w"> 
-    </span><span class="s2">"close"</span><span class="p">:</span><span class="w"> </span><span class="mf">911.915</span><span class="p">,</span><span class="w"> 
-    </span><span class="s2">"time"</span><span class="p">:</span><span class="w"> </span><span class="mi">1485777600</span><span class="p">,</span><span class="w"> 
-    </span><span class="s2">"open"</span><span class="p">:</span><span class="w"> </span><span class="mf">910.424</span><span class="w">
-   </span><span class="p">}</span><span class="w">
-</span><span class="p">]</span><span class="w">
-</span></code></pre>
-<h3 id="chart-types">Chart types</h3>
-
-<table><thead>
-<tr>
-<th>Type value</th>
-<th>Type name</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>1</td>
-<td>1 minute</td>
-</tr>
-<tr>
-<td>5</td>
-<td>5 minutes</td>
-</tr>
-<tr>
-<td>15</td>
-<td>15 minutes</td>
-</tr>
-<tr>
-<td>30</td>
-<td>30 minutes</td>
-</tr>
-<tr>
-<td>60</td>
-<td>1 hour</td>
-</tr>
-<tr>
-<td>240</td>
-<td>4 hours</td>
-</tr>
-<tr>
-<td>D</td>
-<td>1 day</td>
-</tr>
-</tbody></table>
-
-<h3 id="http-request">HTTP Request</h3>
-
-<p><code class="prettyprint">GET https://btc-alpha.com/api/charts/&lt;pair&gt;/&lt;type&gt;/chart</code></p>
-
-<h3 id="query-parameters">Query Parameters</h3>
-
-<table><thead>
-<tr>
-<th>Parameter</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>limit</td>
-<td>720</td>
-<td>Limiting results</td>
-</tr>
-<tr>
-<td>since</td>
-<td>None</td>
-<td>Since Timestamp</td>
-</tr>
-<tr>
-<td>until</td>
-<td>None</td>
-<td>Until Timestamp</td>
 </tr>
 </tbody></table>
 
