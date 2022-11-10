@@ -23,28 +23,6 @@ Welcome to the BTC-Alpha API docs!
 
 Service btc-alpha.com provides open API for trading operations and broadcasting of all trading events.
 
-
-# Web Sockets API
-
-Currently, the Web Socket API can be used to obtain up-to-date information about recent trades, new and cancelled orders. Since the use of a socket connection reduces the cost of the network, it is the preferred way to get the latest exchange rate and the order book.
-
->API built for the latest version of [socket.io](https://www.npmjs.com/package/socket.io) library for Node.js, so it should be easy to work with.
-
-To start working with Web Socket API you have to connect `wss://btc-alpha.com/socket.v2/` and subscribe to necessary channels.
-
-## Channels
->After subscription, you will receive event `subscribe.success` which indicates that everything is ok.
-
->In some cases you may want to receive more specific information from channel(when you want to receive trades only for BTC_USDT pair, for example). To handle this, you can subscribe to "sub-channel" by separating channel name and parameter with a dot(e.g. `trades.BTC_USDT`)
-
-Event | Channels | Description
----| --- | ---
- `ticker` |`ticker`, `ticker.<pair_symbol>` | Last price changes
- `depth.diff` |`diff`, `diff.<pair_symbol>` | Market depth difference. Every event contain an `update_id` to identify merge sequence
-`trades` |`trades`, `trades.<pair_symbol>` | New trades
-`orderbook.20` | `orderbook.20`, `orderbook.20.<pair_symbol>`| Last 20 records from order-book
-
-
 # HTTP API (v1)
 
 
@@ -227,12 +205,14 @@ request.get('https://btc-alpha.com/api/v1/pairs/', function (error, response, bo
 ```json
 [
   {
+    "name": "BTC_USD",
+    "currency1": "BTC",
     "currency2": "USD",
+    "price_precision": 2,
+    "amount_precision": 6,
     "maximum_order_size": 100000000.00000000,
     "minimum_order_size": 0.00000001,
-    "currency1": "BTC",
-    "name": "BTC_USD",
-    "price_precision": 3
+    "liquidity_type": 10
    }
 ]
 ```
@@ -457,30 +437,7 @@ request.get({url: url, qs: params}, function (error, response, body) {
 );
 ```
 
-> Sample output when grouping disabled
-
-```json
-{
-  "sell": [
-    {
-      "price": 911.519,
-      "id": 44667,
-      "amount": 0.000446,
-      "timestamp": 1485777324.410015
-     }
-   ],
-  "buy": [
-    {
-      "price": 911.122,
-      "id": 44647,
-      "amount": 0.001233,
-      "timestamp": 1485777124.415542
-    }
-  ]
-}
-```
-
-> Sample output when grouping enabled
+> Sample output
 
 ```json
 {
@@ -589,12 +546,15 @@ request.get('https://btc-alpha.com/api/v1/order/' + oid + '/', function (error, 
 
 ```json
 {
-  "amount": 0.1250000,
+  "id": 11259,
+  "date": 1478025717394,
   "pair": "BTC_USD",
   "type": "buy",
-  "status": "1",
   "price": 870.69000000,
-  "id": 11259
+  "amount": 0.1250000,
+  "amount_filled": "0.00419580",
+  "amount_original": 0.0041958,
+  "status": "1"
 }
 ```
 
@@ -765,6 +725,7 @@ request.get('https://btc-alpha.com/api/v1/exchanges/', function (error, response
 [
   {
     "id": 6030,
+    "account_id": 384360,
     "price": 839.36000000,
     "pair": "BTC_USD",
     "type": "sell",
